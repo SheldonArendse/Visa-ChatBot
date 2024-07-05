@@ -7,8 +7,9 @@ use GuzzleHttp\Client;
 
 class APIController extends Controller 
 {
-    public function makeOpenAIRequest()
-    {
+public function makeOpenAIRequest(Request $request)
+{
+    try {
         // Creating Guzzle object for HTTP methods
         $client = new Client([
             'base_uri' => 'https://api.openai.com/v1/',
@@ -22,7 +23,7 @@ class APIController extends Controller
         $response = $client->post('completions', [
             'json' => [
                 'model' => 'text-davinci-003',
-                'prompt' => 'Once upon a time',
+                'prompt' => $request->input('prompt'),
                 'max_tokens' => 50,
             ],
         ]);
@@ -31,5 +32,11 @@ class APIController extends Controller
         $completion = json_decode($response->getBody()->getContents(), true);
 
         return response()->json($completion);
+    } 
+    catch (\Exception $e) {
+        return response()->json(['error' => 'Request failed', 'message' => $e->getMessage()], 500);
+    }
     }
 }
+
+
