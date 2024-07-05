@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 
 class APIController extends Controller 
@@ -32,10 +33,10 @@ public function makeOpenAIRequest(Request $request)
         $completion = json_decode($response->getBody()->getContents(), true);
 
         return response()->json($completion);
-    } 
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
+        Log::error('OpenAI request failed: ' . $e->getMessage());
         return response()->json(['error' => 'Request failed', 'message' => $e->getMessage()], 500);
-    }
+        }
     }
 }
 
