@@ -8,6 +8,6 @@ Route::get('/', function () {
 });
 
 // Sending results
-Route::get('/openai/request', [APIController::class, 'makeOpenAIRequest']);
+Route::get('/openai', [APIController::class, 'showForm']);
 // Accepting userinput
 Route::post('/openai/request', [APIController::class, 'makeOpenAIRequest']);
