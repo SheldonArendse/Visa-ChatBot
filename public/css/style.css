@@ -68,6 +68,7 @@ body {
     cursor: pointer;
 }
 
-.chat-input button img {
+.chat-input button ion-icon {
     width: 20px;
+    height: 20px;
 }
