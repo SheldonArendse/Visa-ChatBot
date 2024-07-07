@@ -4,12 +4,13 @@
     <title>OpenAI API Test</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    
 </head>
 
 <body>
 <div class="container chat-container">
     <div class="chat-header">
-        <img src="{{ asset('images/visa-blue.jpg') }}" alt="Visa Logo">
+        <img src="{{ asset('images/visa-blue.jpg') }}" alt="Visa Logo" id="visa-logo">
     </div>
 
     <div class="chat-box">
@@ -23,9 +24,11 @@
     <form method="POST" action="/openai/request" class="chat-input">
         @csrf
         <input type="text" name="prompt" placeholder="Enter your message" required>
-        <button type="submit"><img src="https://cdn-icons-png.flaticon.com/512/130/130925.png" alt="Send"></button>
+        <button type="submit"><ion-icon name="paper-plane-outline"></ion-icon></button>
     </form>
 
 </div>
 </body>
+
+<script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons.js"></script>
 </html>
