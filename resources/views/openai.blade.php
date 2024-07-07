@@ -10,7 +10,7 @@
 <body>
 <div class="container chat-container">
     <div class="chat-header">
-        <img src="{{ asset('images/visa-blue.jpg') }}" alt="Visa Logo" id="visa-logo">
+        <img src="{{ asset('images/visa-no-bg.png') }}" alt="Visa Logo" id="visa-logo">
     </div>
 
     <div class="chat-box">
