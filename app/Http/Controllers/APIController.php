@@ -28,7 +28,7 @@ class APIController extends Controller {
             // Post requests to OpenAI API
             $response = $client->post('completions', [
                 'json' => [
-                    'model' => 'text-davinci-003',
+                    'model' => 'gpt-3.5-turbo',
                     'prompt' => $request->input('prompt'),
                     'max_tokens' => 50,
                 ],

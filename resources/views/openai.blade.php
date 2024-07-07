@@ -3,24 +3,29 @@
 <head>
     <title>OpenAI API Test</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
+
 <body>
-<div class="container">
-    <h1 class="mt-5">Test OpenAI API</h1>
-    <form method="POST" action="/openai/request">
+<div class="container chat-container">
+    <div class="chat-header">
+        <img src="{{ asset('images/visa-blue.jpg') }}" alt="Visa Logo">
+    </div>
+
+    <div class="chat-box">
+        @if(session('response'))
+            <div class="chat-message ai-response">
+                {{ session('response') }}
+            </div>
+        @endif
+    </div>
+
+    <form method="POST" action="/openai/request" class="chat-input">
         @csrf
-        <div class="form-group">
-            <label for="prompt">Enter your prompt:</label>
-            <input type="text" class="form-control" id="prompt" name="prompt" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <input type="text" name="prompt" placeholder="Enter your message" required>
+        <button type="submit"><img src="https://cdn-icons-png.flaticon.com/512/130/130925.png" alt="Send"></button>
     </form>
-    @if(session('response'))
-        <div class="mt-4">
-            <h2>OpenAI Response:</h2>
-            <pre>{{ session('response') }}</pre>
-        </div>
-    @endif
+
 </div>
 </body>
 </html>
