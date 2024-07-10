@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OpenAI API Test</title>
+    <title>MonkeyAI</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
@@ -9,7 +9,7 @@
 <div class="container chat-container">
     <!-- AI logo image -->
     <div class="chat-header">
-        <img src="{{ asset('images/monkeyAI-Title.png') }}" alt="Visa Logo" id="visa-logo">
+        <img src="{{ asset('images/monkeyAI-Title.png') }}" alt="AI Logo" id="ai-logo">
     </div>
 
     <!-- Conversation history and text output -->
@@ -21,7 +21,7 @@
                         <strong>{{ ucfirst($message['role']) }}:</strong> {{ $message['content'] }}
                     @else
                         <div class="ai-response">
-                            <img src="{{ asset('images/monkey.jpg') }}" alt="AI Icon" class="profile-icon">
+                            <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon">
                             {{ $message['content'] }}
                         </div>
                     @endif
