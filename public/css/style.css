@@ -44,17 +44,18 @@ body {
 
 .user-message {
     background-color: #F7B600;
-    text-align: right;
+    text-align: left;
     border-radius: 20px;
-    padding: 10px 20px 10px 10px;
-    margin-bottom: 10px;
+    padding: 10px 20px 10px 20px;
+    margin-bottom: 20px;
     position: relative;
     max-width: fit-content;
     float: right;
+    max-width: 80%;
 }
 
 .ai-response {
-    background-color: #636363;
+    background-color: #3a3a3a;
     color: #fff;
     text-align: left;
     display: inline-block;
@@ -62,6 +63,7 @@ body {
     padding: 10px 20px 10px 55px;
     margin-bottom: 10px;
     position: relative;
+    max-width: 90%;
 }
 
 .profile-icon {

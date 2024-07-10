@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>MonkeyAI</title>
-    <link rel="icon" href="{{ asset('banana.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('images/banana.png') }}" type="image/png">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
