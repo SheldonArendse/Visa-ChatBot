@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>MonkeyAI</title>
+    <link rel="icon" href="{{ asset('banana.png') }}" type="image/png">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
@@ -23,7 +24,7 @@
                     @else
                         <div class="ai-response">
                             <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon">
-                            <strong>{{ ucfirst($message['role']) }}:</strong> {{ $message['content'] }}
+                            {{ $message['content'] }}
                         </div>
                     @endif
                 </div>

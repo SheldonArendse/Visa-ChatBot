@@ -30,7 +30,7 @@ body {
 }
 
 .chat-box {
-    height: 400px;
+    height: 70vh;
     overflow-y: scroll;
     border: 1px solid #ddd;
     padding: 10px;
@@ -38,27 +38,28 @@ body {
 }
 
 .chat-message {
-    margin-bottom: 10px;
     padding: 10px;
     border-radius: 10px;
 }
 
 .user-message {
     background-color: #F7B600;
-    margin-left: 30%;
     text-align: right;
     border-radius: 20px;
-    padding: 10px;
+    padding: 10px 20px 10px 10px;
     margin-bottom: 10px;
+    position: relative;
+    max-width: fit-content;
+    float: right;
 }
 
 .ai-response {
     background-color: #636363;
-    color: #edfa36;
+    color: #fff;
     text-align: left;
     display: inline-block;
     border-radius: 20px;
-    padding: 10px 20px 5px 30px;
+    padding: 10px 20px 10px 55px;
     margin-bottom: 10px;
     position: relative;
 }
@@ -68,16 +69,10 @@ body {
     height: 32px;
     border-radius: 50%;
     position: absolute;
-    left: -10px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     z-index: 1;
-}
-
-.chat-message-container::after {
-    content: "";
-    display: table;
-    clear: both;
 }
 
 /* user input textfield */

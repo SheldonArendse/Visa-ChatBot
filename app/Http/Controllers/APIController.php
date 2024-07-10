@@ -35,7 +35,7 @@ class APIController extends Controller {
                             'content' => $request->input('prompt'),
                         ],
                     ],
-                    'max_tokens' => 50,
+                    'max_tokens' => 100,
                 ],
             ]);
 
