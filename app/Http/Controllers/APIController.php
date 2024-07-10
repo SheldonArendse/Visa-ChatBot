@@ -39,8 +39,9 @@ class APIController extends Controller {
                 ],
             ]);
 
-            // Decode JSON by converting the JSON string into a PHP variable
+            // Decode JSON by converting the JSON string into a PHP array
             $completion = json_decode($response->getBody()->getContents(), true);
+            // AI's response is extracted from the array
             $message = $completion['choices'][0]['message']['content'];
 
             // Get existing conversation from session or instantiate an empty array
@@ -53,6 +54,7 @@ class APIController extends Controller {
             // Store the updated conversation in the session
             session(['conversation' => $conversation]);
 
+            // redirect back to the form page
             return redirect()->back();
             
         } catch (\Exception $e) {

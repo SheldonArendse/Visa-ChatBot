@@ -37,13 +37,22 @@ body {
 }
 
 .user-message {
+    background-color: #636363;
+    color: #edfa36;
+    margin-left: 30%;
     text-align: right;
-    background-color: #f1f1f1;
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 .ai-response {
+    background-color: #edf76c;
     text-align: left;
-    background-color: #e2e2e2;
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-right: 20%;
 }
 
 /* user input textfield */

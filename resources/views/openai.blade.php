@@ -7,10 +7,12 @@
 </head>
 <body>
 <div class="container chat-container">
+    <!-- AI logo image -->
     <div class="chat-header">
         <img src="{{ asset('images/visa-no-bg.png') }}" alt="Visa Logo" id="visa-logo">
     </div>
 
+    <!-- Conversation history and text output -->
     <div class="chat-box">
         @if(session('conversation'))
             @foreach(session('conversation') as $message)
@@ -21,6 +23,7 @@
         @endif
     </div>
 
+    <!-- User input field and send button -->
     <form method="POST" action="{{ route('openai.request') }}" class="chat-input">
         @csrf
         <input type="text" name="prompt" placeholder="Enter your message" required>
