@@ -19,7 +19,7 @@ body {
 }
 
 #visa-logo {
-    width: 20%;
+    width: 30%;
 }
 
 .chat-box {
@@ -53,7 +53,25 @@ body {
     border-radius: 20px;
     padding: 10px;
     margin-bottom: 10px;
-    max-width: 80%;
+    margin-right: 40px;
+    position: relative;
+}
+
+.profile-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.chat-message-container::after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 /* user input textfield */
@@ -70,6 +88,7 @@ body {
     border: 1px solid #ddd;
 }
 
+/* Send button */
 .chat-input button {
     margin-left: 10px;
     background-color: #ffc107;
