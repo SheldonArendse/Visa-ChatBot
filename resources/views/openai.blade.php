@@ -10,19 +10,20 @@
     <!-- AI logo image -->
     <div class="chat-header">
         <img src="{{ asset('images/monkeyAI-Title.png') }}" alt="AI Logo" id="ai-logo">
+        
     </div>
 
     <!-- Conversation history and text output -->
     <div class="chat-box">
         @if(session('conversation'))
             @foreach(session('conversation') as $message)
-                <div class="chat-message {{ $message['role'] == 'user' ? 'user-message' : 'ai-response' }}">
+                <div class="chat-message {{ $message['role'] == 'user' ? 'user-message' : 'ai-message-container' }}">
                     @if($message['role'] == 'user')
-                        <strong>{{ ucfirst($message['role']) }}:</strong> {{ $message['content'] }}
+                        {{ $message['content'] }}
                     @else
                         <div class="ai-response">
                             <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon">
-                            {{ $message['content'] }}
+                            <strong>{{ ucfirst($message['role']) }}:</strong> {{ $message['content'] }}
                         </div>
                     @endif
                 </div>
@@ -35,6 +36,7 @@
         @csrf
         <input type="text" name="prompt" placeholder="Enter your message" required>
         <button type="submit"><ion-icon name="paper-plane-outline"></ion-icon></button>
+        <a href="{{ route('clear.session') }}" class="btn btn-danger">Clear Chat</a>
     </form>
 </div>
 
