@@ -26,10 +26,15 @@ class APIController extends Controller {
             ]);
 
             // Post requests to OpenAI API
-            $response = $client->post('completions', [
+            $response = $client->post('chat/completions', [
                 'json' => [
-                    'model' => 'gpt-3.5-turbo',
-                    'prompt' => $request->input('prompt'),
+                    'model' => 'gpt-4',
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $request->input('prompt'),
+                        ],
+                    ],
                     'max_tokens' => 50,
                 ],
             ]);
