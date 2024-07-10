@@ -41,12 +41,24 @@ class APIController extends Controller {
 
             // Decode JSON by converting the JSON string into a PHP variable
             $completion = json_decode($response->getBody()->getContents(), true);
+            $message = $completion['choices'][0]['message']['content'];
 
-            return response()->json($completion);
+            // Get existing conversation from session or instantiate an empty array
+            $conversation = session('conversation', []);
+
+            // Append user input and response to the conversation
+            $conversation[] = ['role' => 'user', 'content' => $request->input('prompt')];
+            $conversation[] = ['role' => 'assistant', 'content' => $message];
+
+            // Store the updated conversation in the session
+            session(['conversation' => $conversation]);
+
+            return redirect()->back();
+            
         } catch (\Exception $e) {
             Log::error('OpenAI request failed: ' . $e->getMessage());
-            return response()->json(['ERROR' => 'Request failed', 'Message' => $e->getMessage()], 500);
-            }
+            return redirect()->back()->with('response', 'Error: ' . $e->getMessage());
+        }
     }
 }
 
