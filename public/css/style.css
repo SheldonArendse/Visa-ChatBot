@@ -1,16 +1,23 @@
 body {
-    /* background-color: #2b2b2b; */
-    background-color: #F7B600;
-}
-
-.chat-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url("../images/jungle.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  
+  .chat-container {
     max-width: 800px;
-    margin: 50px auto;
-    border: 1px solid #ddd;
+    border: 2px solid #ffffff;
     border-radius: 20px;
     padding: 20px;
-    background-color: #474747;;
-}
+    background-color: #474747;
+  }
 
 .chat-header {
     text-align: center;
@@ -27,7 +34,7 @@ body {
     overflow-y: scroll;
     border: 1px solid #ddd;
     padding: 10px;
-    background-color: #fff;
+    background-color: #ffeebe;
 }
 
 .chat-message {
@@ -37,7 +44,7 @@ body {
 }
 
 .user-message {
-    background-color: #edf76c;
+    background-color: #F7B600;
     margin-left: 30%;
     text-align: right;
     border-radius: 20px;
