@@ -50,7 +50,11 @@ class APIController extends Controller {
             // Add system message to provide context for the AI
             $systemMessage = [
                 'role' => 'system',
-                'content' => 'You are a helpful assistant specialized in answering questions related to South African Visas. Provide brief answers only'
+                'content' => 'You are a helpful assistant specialized in answering questions related to South African Visas. 
+                Provide brief answers only.
+                List in bullet form when needed.
+                Do not exceed 150 token usage.
+                If response is over 150 tokens only respond until the last full sentence'
             ];
 
             // Create the messages array for API request
