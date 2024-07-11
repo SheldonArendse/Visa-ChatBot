@@ -50,11 +50,9 @@ class APIController extends Controller {
             // Add system message to provide context for the AI
             $systemMessage = [
                 'role' => 'system',
-                'content' => 'You are a helpful assistant specialized in answering questions related to South African Visas. 
-                Provide brief answers only.
-                List in bullet form when needed.
-                Do not exceed 150 token usage.
-                If response is over 150 tokens only respond until the last full sentence'
+                'content' => 'You are an assistant speaking with a client specialized in providing information about South African visas. Your responses should:
+                    - Be concise and not exceed 150 tokens.
+                    - Provide all the necessary information using only 150 tokens or less'
             ];
 
             // Create the messages array for API request
@@ -64,9 +62,9 @@ class APIController extends Controller {
             // Post request to OpenAI API
             $response = $client->post('chat/completions', [
                 'json' => [
-                    'model' => 'gpt-4',
+                    'model' => 'gpt-4o',
                     'messages' => $apiMessages,
-                    'max_tokens' => 150,
+                    'max_tokens' => 200,
                 ],
             ]);
 
