@@ -50,7 +50,7 @@ class APIController extends Controller {
             // Add system message to provide context for the AI
             $systemMessage = [
                 'role' => 'system',
-                'content' => 'You are a helpful assistant specialized in answering questions related to South African Visas.'
+                'content' => 'You are a helpful assistant specialized in answering questions related to South African Visas. Provide brief answers only'
             ];
 
             // Create the messages array for API request
@@ -71,19 +71,47 @@ class APIController extends Controller {
             // AI's response is extracted from the array
             $message = $completion['choices'][0]['message']['content'];
 
+            // Format the response manually
+            $formattedMessage = $this->formatResponseManually($message);
+
             // Append user input and AI response to the conversation
             $conversation[] = ['role' => 'user', 'content' => $userMessage];
-            $conversation[] = ['role' => 'assistant', 'content' => $message];
+            $conversation[] = ['role' => 'assistant', 'content' => $formattedMessage];
 
             // Store the updated conversation in the session
             session(['conversation' => $conversation]);
 
             // Redirect back to the form page with the AI's response
-            return redirect()->back()->with('message', $message);
+            return redirect()->back()->with('message', $formattedMessage);
         
         } catch (\Exception $e) {
             Log::error('OpenAI request failed: ' . $e->getMessage());
             return redirect()->back()->with('response', 'Error: ' . $e->getMessage());
         }
     }
+
+    private function formatResponseManually($response)
+    {
+        // Convert new lines to <br>
+        $response = nl2br($response);
+
+        // Handle bold text
+        $response = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $response);
+
+        // Handle italic text
+        $response = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $response);
+
+        // Handle unordered lists
+        $response = preg_replace('/\n- (.*?)(?=\n|$)/', '<ul><li>$1</li></ul>', $response);
+
+        // Handle ordered lists
+        $response = preg_replace('/\n\d+\. (.*?)(?=\n|$)/', '<ol><li>$1</li></ol>', $response);
+
+        // Handle nested lists
+        $response = preg_replace('/<\/ul>\s*<ul>/', '', $response);
+        $response = preg_replace('/<\/ol>\s*<ol>/', '', $response);
+
+        return $response;
+    }
 }
+
