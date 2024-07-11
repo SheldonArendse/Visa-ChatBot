@@ -9,6 +9,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    overflow: hidden;
 }
 
 .chat-container {
@@ -26,7 +27,7 @@ body {
 }
 
 #ai-logo {
-    width: 30%;
+    width: 35%;
 }
 
 .chat-box {
