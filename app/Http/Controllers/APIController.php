@@ -21,9 +21,10 @@ class APIController extends Controller {
         $userMessage = $request->input('prompt');
 
         if (!$userMessage) {
-            // Fetch the latest message from the database if no input provided
+            // Fetch latest message from the database if no input provided
             $latestMessage = DB::table('fb_api_msg')->orderBy('MsgID', 'desc')->first();
 
+            // Throw error message if there's no messages in the database
             if (!$latestMessage) {
                 throw new \Exception('No messages found in the database.');
             }
@@ -46,7 +47,7 @@ class APIController extends Controller {
         // Post request to OpenAI API
         $response = $client->post('chat/completions', [
             'json' => [
-                'model' => 'gpt-4',
+                'model' => 'gpt-4o',
                 'messages' => [
                     [
                         'role' => 'user',
@@ -72,7 +73,7 @@ class APIController extends Controller {
         // Store the updated conversation in the session
         session(['conversation' => $conversation]);
 
-        // redirect back to the form page with the assistant's response
+        // redirect back to the form page with the AI's response
         return redirect()->back()->with('response', $message);
         
     } catch (\Exception $e) {
