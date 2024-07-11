@@ -11,7 +11,6 @@
     <!-- AI logo image -->
     <div class="chat-header">
         <img src="{{ asset('images/monkeyAI-Title.png') }}" alt="AI Logo" id="ai-logo">
-        
     </div>
 
     <!-- Conversation history and text output -->
@@ -30,12 +29,21 @@
                 </div>
             @endforeach
         @endif
+
+        @if(session('response'))
+            <div class="chat-message ai-message-container">
+                <div class="ai-response">
+                    <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon">
+                    {{ session('response') }}
+                </div>
+            </div>
+        @endif
     </div>
 
     <!-- User input field and send button -->
     <form method="POST" action="{{ route('openai.request') }}" class="chat-input">
         @csrf
-        <input type="text" name="prompt" placeholder="Enter your message" required>
+        <input type="text" name="prompt" placeholder="Enter your message">
         <button type="submit"><ion-icon name="paper-plane-outline"></ion-icon></button>
         <a href="{{ route('clear.session') }}" class="btn btn-danger">Clear Chat</a>
     </form>

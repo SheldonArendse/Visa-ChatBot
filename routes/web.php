@@ -20,4 +20,5 @@ Route::get('/clear-session', function () {
     return redirect()->route('openai/form'); 
 })->name('clear.session');
 
+// Clear the conversation and redirect to the current page
 Route::get('/clear-session', [ChatController::class, 'clearSession'])->name('clear.session');
