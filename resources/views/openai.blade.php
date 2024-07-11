@@ -19,11 +19,11 @@
             @foreach(session('conversation') as $message)
                 <div class="chat-message {{ $message['role'] == 'user' ? 'user-message' : 'ai-message-container' }}">
                     @if($message['role'] == 'user')
-                        {{!! $message['content'] !!}}
+                        {!! $message['content'] !!}
                     @else
                         <div class="ai-response">
                             <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon">
-                            {{!! $message['content'] !!}}
+                            {!! $message['content'] !!}
                         </div>
                     @endif
                 </div>
@@ -34,7 +34,7 @@
             <div class="chat-message ai-message-container">
                 <div class="ai-response">
                     <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon">
-                    {{!! session('response') !!}}
+                    {!! session('response') !!}
                 </div>
             </div>
         @endif
