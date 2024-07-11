@@ -74,7 +74,7 @@ class APIController extends Controller {
         session(['conversation' => $conversation]);
 
         // redirect back to the form page with the AI's response
-        return redirect()->back()->with('response', $message);
+        return redirect()->back()->with('message', $message);
         
     } catch (\Exception $e) {
         Log::error('OpenAI request failed: ' . $e->getMessage());
