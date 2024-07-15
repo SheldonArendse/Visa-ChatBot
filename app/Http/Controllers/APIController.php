@@ -66,8 +66,9 @@ class APIController extends Controller {
                 $systemMessage = [
                     'role' => 'system',
                     'content' => 'You are an assistant speaking with a client specialized in providing information about South African visas. Your responses should:
-                        - Be concise and not exceed 150 tokens.
-                        - Provide all the necessary information using only 150 tokens or less'
+                        - Be concise and not exceed 200 tokens.
+                        - Provide all the necessary information using only 200 tokens or less
+                        - Please check if there\'s a similar question in the FAQ document and provide the answer if there is'
                 ];
 
                 // Create the messages array for API request
@@ -112,7 +113,7 @@ class APIController extends Controller {
     }
 
     /**
-     * Check the FAQ file for a matching question.
+     * Docblock to check the FAQ file for a matching question.
      *
      * @param string $userMessage
      * @param array $faqs
