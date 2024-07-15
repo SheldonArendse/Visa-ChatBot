@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Session;
 
 class APIController extends Controller {
 
@@ -35,61 +36,96 @@ class APIController extends Controller {
                 Log::info('User provided message: ' . $userMessage);
             }
 
-            // Creating Guzzle object for HTTP methods
-            $client = new Client([
-                'base_uri' => 'https://api.openai.com/v1/',
-                'headers' => [
-                    'Authorization' => 'Bearer ' . config('services.openai.api_key'),
-                    'Content-Type' => 'application/json',
-                ],
-            ]);
+            // Load the JSON FAQ file
+            $faqFile = storage_path('app/training/faqs.json');
+            $faqs = json_decode(file_get_contents($faqFile), true);
+
+            // Check FAQs
+            $faqAnswer = $this->checkFaqs($userMessage, $faqs);
 
             // Get existing conversation from session or instantiate an empty array
             $conversation = session('conversation', []);
 
-            // Add system message to provide context for the AI
-            $systemMessage = [
-                'role' => 'system',
-                'content' => 'You are an assistant speaking with a client specialized in providing information about South African visas. Your responses should:
-                    - Be concise and not exceed 150 tokens.
-                    - Provide all the necessary information using only 150 tokens or less'
-            ];
+            // Append the FAQ answer to the conversation array
+            if ($faqAnswer) {
+                $response = $faqAnswer;
+                Log::info('AI Response from FAQ: ' . $faqAnswer);
+                $conversation[] = ['role' => 'user', 'content' => $userMessage];
+                $conversation[] = ['role' => 'assistant', 'content' => $faqAnswer];
+            } else {
+                // Creating Guzzle object for HTTP methods
+                $client = new Client([
+                    'base_uri' => 'https://api.openai.com/v1/',
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . config('services.openai.api_key'),
+                        'Content-Type' => 'application/json',
+                    ],
+                ]);
 
-            // Create the messages array for API request
-            $apiMessages = array_merge([$systemMessage], $conversation);
-            $apiMessages[] = ['role' => 'user', 'content' => $userMessage];
+                // Add system message to provide context for the AI
+                $systemMessage = [
+                    'role' => 'system',
+                    'content' => 'You are an assistant speaking with a client specialized in providing information about South African visas. Your responses should:
+                        - Be concise and not exceed 150 tokens.
+                        - Provide all the necessary information using only 150 tokens or less'
+                ];
 
-            // Post request to OpenAI API
-            $response = $client->post('chat/completions', [
-                'json' => [
-                    'model' => 'gpt-4o',
-                    'messages' => $apiMessages,
-                    'max_tokens' => 200,
-                ],
-            ]);
+                // Create the messages array for API request
+                $apiMessages = array_merge([$systemMessage], $conversation);
+                $apiMessages[] = ['role' => 'user', 'content' => $userMessage];
 
-            // Decode JSON by converting the JSON string into a PHP array
-            $completion = json_decode($response->getBody()->getContents(), true);
-            // AI's response is extracted from the array
-            $message = $completion['choices'][0]['message']['content'];
+                // Post request to OpenAI API
+                $response = $client->post('chat/completions', [
+                    'json' => [
+                        'model' => 'gpt-4o',
+                        'messages' => $apiMessages,
+                        'max_tokens' => 200,
+                    ],
+                ]);
 
-            // Format the response manually
-            $formattedMessage = $this->formatResponseManually($message);
+                // Decode JSON by converting the JSON string into a PHP array
+                $completion = json_decode($response->getBody()->getContents(), true);
+                // AI's response is extracted from the array
+                $message = $completion['choices'][0]['message']['content'];
 
-            // Append user input and AI response to the conversation
-            $conversation[] = ['role' => 'user', 'content' => $userMessage];
-            $conversation[] = ['role' => 'assistant', 'content' => $formattedMessage];
+                // Format the response manually
+                $formattedMessage = $this->formatResponseManually($message);
+
+                // Append user input and AI response to the conversation
+                $conversation[] = ['role' => 'user', 'content' => $userMessage];
+                $conversation[] = ['role' => 'assistant', 'content' => $formattedMessage];
+
+                // Use the formatted message as the response
+                $response = $formattedMessage;
+            }
 
             // Store the updated conversation in the session
             session(['conversation' => $conversation]);
 
             // Redirect back to the form page with the AI's response
-            return redirect()->back()->with('message', $formattedMessage);
-        
+            return redirect()->back()->with('message', $response);
+
         } catch (\Exception $e) {
             Log::error('OpenAI request failed: ' . $e->getMessage());
             return redirect()->back()->with('response', 'Error: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Check the FAQ file for a matching question.
+     *
+     * @param string $userMessage
+     * @param array $faqs
+     * @return string|null
+     */
+    private function checkFaqs($userMessage, $faqs)
+    {
+        foreach ($faqs as $faq) {
+            if (strcasecmp($faq['question'], $userMessage) == 0) {
+                return $faq['answer'];
+            }
+        }
+        return null;
     }
 
     private function formatResponseManually($response)
@@ -116,4 +152,3 @@ class APIController extends Controller {
         return $response;
     }
 }
-

@@ -29,15 +29,6 @@
                 </div>
             @endforeach
         @endif
-
-        @if(session('response'))
-            <div class="chat-message ai-message-container">
-                <div class="ai-response">
-                    <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon">
-                    {!! session('response') !!}
-                </div>
-            </div>
-        @endif
     </div>
 
     <!-- User input field and send button -->
