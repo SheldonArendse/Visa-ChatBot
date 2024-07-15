@@ -79,7 +79,7 @@ class APIController extends Controller {
                     'json' => [
                         'model' => 'gpt-4o',
                         'messages' => $apiMessages,
-                        'max_tokens' => 200,
+                        'max_tokens' => 220, // Largest token usage in FAQ is 213 tokens
                     ],
                 ]);
 
@@ -118,6 +118,8 @@ class APIController extends Controller {
      * @param array $faqs
      * @return string|null
      */
+
+     // Iterate through JSON file for corresponding question and answer
     private function checkFaqs($userMessage, $faqs)
     {
         foreach ($faqs as $faq) {

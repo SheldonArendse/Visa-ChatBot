@@ -14,7 +14,8 @@
     </div>
 
     <!-- Conversation history and text output -->
-    <div class="chat-box">
+    <!-- Conversation history and text output -->
+    <div class="chat-box" id="chat-box">
         @if(session('conversation'))
             @foreach(session('conversation') as $message)
                 <div class="chat-message {{ $message['role'] == 'user' ? 'user-message' : 'ai-message-container' }}">
@@ -41,5 +42,17 @@
 </div>
 
 <script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons.js"></script>
+
+<script>
+    // Scroll to the bottom of the chat box
+    function scrollToBottom() {
+        var chatBox = document.getElementById('chat-box');
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Call scrollToBottom when the page loads or updates
+    window.onload = scrollToBottom;
+</script>
+
 </body>
 </html>
