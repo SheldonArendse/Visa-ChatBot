@@ -18,7 +18,6 @@ class ConvertWordToJson extends Command
 
         $faqs = FAQExtractor::extractFaqsFromDocx($filePath);
 
-        // Log the extracted FAQs for debugging
         Log::info('FAQs to be saved as JSON: ', $faqs);
 
         // Save JSON in the storage/app/training directory

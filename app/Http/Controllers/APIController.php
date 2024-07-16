@@ -62,16 +62,16 @@ class APIController extends Controller {
                     ],
                 ]);
 
-                // Add system message to provide context for the AI
+                // Add system message to provide context for the AI (Prompt Engineering)
                 $systemMessage = [
                     'role' => 'system',
                     'content' => 'You are an assistant speaking with a client specialized in providing information about South African visas. Your responses should:
                         - Be concise and not exceed 200 tokens.
-                        - Provide all the necessary information using only 200 tokens or less
-                        - Please check if there\'s a similar question in the FAQ document and provide the answer if there is'
+                        - Provide all the necessary information using only 200 tokens or less'
                 ];
 
                 // Create the messages array for API request
+                // Merge the system message and the conversation history array
                 $apiMessages = array_merge([$systemMessage], $conversation);
                 $apiMessages[] = ['role' => 'user', 'content' => $userMessage];
 
@@ -86,7 +86,11 @@ class APIController extends Controller {
 
                 // Decode JSON by converting the JSON string into a PHP array
                 $completion = json_decode($response->getBody()->getContents(), true);
-                // AI's response is extracted from the array
+                /* AI's response is extracted from the array 
+                    Access first element in choices array
+                    Message holds the details of the text
+                    Content is the actual text content
+                */
                 $message = $completion['choices'][0]['message']['content'];
 
                 // Format the response manually
@@ -120,7 +124,10 @@ class APIController extends Controller {
      * @return string|null
      */
 
-     // Iterate through JSON file for corresponding question and answer
+     /* Iterate through JSON file for corresponding question and answer 
+        Checks if user question matches a question in the FAQ array
+        Not case sensitive
+     */
     private function checkFaqs($userMessage, $faqs)
     {
         foreach ($faqs as $faq) {
@@ -131,6 +138,7 @@ class APIController extends Controller {
         return null;
     }
 
+    // Temporary solution for message formatting
     private function formatResponseManually($response)
     {
         // Convert new lines to <br>
