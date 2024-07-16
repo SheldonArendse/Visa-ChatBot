@@ -14,8 +14,9 @@ class FAQExtractor
     {
         Log::info('Loading file: ' . $filePath);
 
-        // Load the Word document
+        // Load the Word document using PHPOffice
         $phpWord = IOFactory::load($filePath, 'Word2007');
+        // FAQs array to store questions and answers
         $faqs = [];
 
         Log::info('File loaded successfully.');
@@ -39,7 +40,7 @@ class FAQExtractor
             }
         }
 
-        // Log the extracted FAQs to verify
+        // Log the extracted FAQs to debug
         Log::info('Extracted FAQs: ' . json_encode($faqs));
 
         return $faqs;
