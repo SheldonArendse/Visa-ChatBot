@@ -77,7 +77,7 @@ class APIController extends Controller
                 'json' => [
                     'model' => 'gpt-4o',
                     'messages' => $apiMessages,
-                    'max_tokens' => 150,
+                    'max_tokens' => 220,
                     'n' => 1,
                     'stop' => null,
                 ],
@@ -107,17 +107,22 @@ class APIController extends Controller
         }
     }
 
+    // Find FAQ query related to the user query
     private function findRelevantEntries($user_query, $training_data)
     {
         $relevant_entries = [];
+        // Tokenize user's query into individual words
         $query_tokens = explode(' ', $user_query);
         $idf = $this->calculateIDF($training_data);
 
+        // Loop through each entry in the FAQ document
         foreach ($training_data as $entry) {
+            // Tokenize the question in JSON file into individual words
             $entry_tokens = explode(' ', $entry['question']);
             $score = $this->calculateTFIDF($entry_tokens, $query_tokens, $idf);
 
-            if ($score > 0.5) { // Adjust the threshold as needed
+            // if the TFIDF score is above threshold, add it to relevant_entries array
+            if ($score > 0.5) {
                 $relevant_entries[] = $entry;
             }
         }
