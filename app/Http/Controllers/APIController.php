@@ -130,15 +130,19 @@ class APIController extends Controller
         return $relevant_entries;
     }
 
+    // Calculate IDF for each unique word (token) in the training data
     private function calculateIDF($training_data)
     {
         $idf = [];
 
         foreach ($training_data as $entry) {
             $entry_tokens = explode(' ', $entry['question']);
+            // Create an array for unique tokens
             $unique_tokens = array_unique($entry_tokens);
 
+            // Loop through each unique token in the unique_tokens array
             foreach ($unique_tokens as $token) {
+                // if the array is empty set it to 1 else increment by 1
                 if (!isset($idf[$token])) {
                     $idf[$token] = 1;
                 } else {
@@ -147,20 +151,28 @@ class APIController extends Controller
             }
         }
 
+        // Total number of entries in the training data
         $num_entries = count($training_data);
+        // Loop through each token in the IDF array
         foreach ($idf as $token => $count) {
+            // Calculate the IDF value for the token
             $idf[$token] = log($num_entries / $count);
         }
 
         return $idf;
     }
 
+    // Calculate how relevant a document is to a user's query
     private function calculateTFIDF($entry_tokens, $query_tokens, $idf)
     {
+        // Total TFIDF score
         $score = 0;
 
+        // Loop through each token in the query_tokens array (words from user question)
+        // Calculate the TF for each token in the loop
         foreach ($query_tokens as $token) {
             $tf = $this->calculateTF($token, $entry_tokens);
+            // if token does not exist in the IDF array set the value to 0
             $score += $tf * ($idf[$token] ?? 0);
         }
 
