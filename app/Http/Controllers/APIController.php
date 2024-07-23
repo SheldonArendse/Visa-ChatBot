@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Session;
 
-class APIController extends Controller {
+class APIController extends Controller
+{
 
     public function showForm()
     {
@@ -40,105 +42,146 @@ class APIController extends Controller {
             $faqFile = storage_path('app/training/faqs.json');
             $faqs = json_decode(file_get_contents($faqFile), true);
 
-            // Check FAQs
-            $faqAnswer = $this->checkFaqs($userMessage, $faqs);
+            // Find relevant entries from FAQs
+            $relevantEntries = $this->findRelevantEntries($userMessage, $faqs);
+            $context = $this->buildContext($relevantEntries);
 
             // Get existing conversation from session or instantiate an empty array
             $conversation = session('conversation', []);
 
-            // Append the FAQ answer to the conversation array
-            if ($faqAnswer) {
-                $response = $faqAnswer;
-                Log::info('AI Response from FAQ: ' . $faqAnswer);
-                $conversation[] = ['role' => 'user', 'content' => $userMessage];
-                $conversation[] = ['role' => 'assistant', 'content' => $faqAnswer];
-            } else {
-                // Creating Guzzle object for HTTP methods
-                $client = new Client([
-                    'base_uri' => 'https://api.openai.com/v1/',
-                    'headers' => [
-                        'Authorization' => 'Bearer ' . config('services.openai.api_key'),
-                        'Content-Type' => 'application/json',
-                    ],
-                ]);
+            // Create the messages array for API request
+            $systemMessage = [
+                'role' => 'system',
+                'content' => 'You are an assistant speaking with a client specialized in providing information about South African visas. Your responses should:
+                    - Be concise and not exceed 200 tokens.
+                    - Provide all the necessary information using only 200 tokens or less.'
+            ];
 
-                // Add system message to provide context for the AI (Prompt Engineering)
-                $systemMessage = [
-                    'role' => 'system',
-                    'content' => 'You are an assistant speaking with a client specialized in providing information about South African visas. Your responses should:
-                        - Be concise and not exceed 200 tokens.
-                        - Provide all the necessary information using only 200 tokens or less'
-                ];
+            // Merge the system message and the conversation history array
+            $apiMessages = array_merge([$systemMessage], $conversation);
+            $apiMessages[] = ['role' => 'user', 'content' => $userMessage];
 
-                // Create the messages array for API request
-                // Merge the system message and the conversation history array
-                $apiMessages = array_merge([$systemMessage], $conversation);
-                $apiMessages[] = ['role' => 'user', 'content' => $userMessage];
+            // Post request to OpenAI API
+            $client = new Client([
+                'base_uri' => 'https://api.openai.com/v1/',
+                'headers' => [
+                    'Authorization' => 'Bearer ' . config('services.openai.api_key'),
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
 
-                // Post request to OpenAI API
-                $response = $client->post('chat/completions', [
-                    'json' => [
-                        'model' => 'gpt-4o',
-                        'messages' => $apiMessages,
-                        'max_tokens' => 220, // Largest token usage in FAQ is 213 tokens
-                    ],
-                ]);
+            // Prepare the prompt with context
+            $prompt = "You are an expert visa immigration lawyer in South Africa, assisting clients with visa and permit questions. Based on the provided context, please provide a concise and accurate response to the user's query:\n\nContext: $context\n\nUser Query: $userMessage\n\nResponse:";
 
-                // Decode JSON by converting the JSON string into a PHP array
-                $completion = json_decode($response->getBody()->getContents(), true);
-                /* AI's response is extracted from the array 
-                    Access first element in choices array
-                    Message holds the details of the text
-                    Content is the actual text content
-                */
-                $message = $completion['choices'][0]['message']['content'];
+            $response = $client->post('completions', [
+                'json' => [
+                    'model' => 'gpt-3.5-turbo-instruct',
+                    'prompt' => $prompt,
+                    'max_tokens' => 150,
+                    'n' => 1,
+                    'stop' => null,
+                ],
+            ]);
 
-                // Format the response manually
-                $formattedMessage = $this->formatResponseManually($message);
+            $completion = json_decode($response->getBody()->getContents(), true);
+            $message = $completion['choices'][0]['text'];
 
-                // Append user input and AI response to the conversation
-                $conversation[] = ['role' => 'user', 'content' => $userMessage];
-                $conversation[] = ['role' => 'assistant', 'content' => $formattedMessage];
+            // Format the response manually
+            $formattedMessage = $this->formatResponseManually($message);
 
-                // Use the formatted message as the response
-                $response = $formattedMessage;
-            }
+            // Append user input and AI response to the conversation
+            $conversation[] = ['role' => 'user', 'content' => $userMessage];
+            $conversation[] = ['role' => 'assistant', 'content' => $formattedMessage];
+
+            // Use the formatted message as the response
+            $response = $formattedMessage;
 
             // Store the updated conversation in the session
             session(['conversation' => $conversation]);
 
             // Redirect back to the form page with the AI's response
             return redirect()->back()->with('message', $response);
-
         } catch (\Exception $e) {
             Log::error('OpenAI request failed: ' . $e->getMessage());
             return redirect()->back()->with('response', 'Error: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Docblock to check the FAQ file for a matching question.
-     *
-     * @param string $userMessage
-     * @param array $faqs
-     * @return string|null
-     */
-
-     /* Iterate through JSON file for corresponding question and answer 
-        Checks if user question matches a question in the FAQ array
-        Not case sensitive
-     */
-    private function checkFaqs($userMessage, $faqs)
+    private function findRelevantEntries($user_query, $training_data)
     {
-        foreach ($faqs as $faq) {
-            if (strcasecmp($faq['question'], $userMessage) == 0) {
-                return $faq['answer'];
+        $relevant_entries = [];
+        $query_tokens = explode(' ', $user_query);
+        $idf = $this->calculateIDF($training_data);
+
+        foreach ($training_data as $entry) {
+            $entry_tokens = explode(' ', $entry['question']);
+            $score = $this->calculateTFIDF($entry_tokens, $query_tokens, $idf);
+
+            if ($score > 0.5) { // Adjust the threshold as needed
+                $relevant_entries[] = $entry;
             }
         }
-        return null;
+
+        return $relevant_entries;
     }
 
-    // Temporary solution for message formatting
+    private function calculateIDF($training_data)
+    {
+        $idf = [];
+
+        foreach ($training_data as $entry) {
+            $entry_tokens = explode(' ', $entry['question']);
+            $unique_tokens = array_unique($entry_tokens);
+
+            foreach ($unique_tokens as $token) {
+                if (!isset($idf[$token])) {
+                    $idf[$token] = 1;
+                } else {
+                    $idf[$token]++;
+                }
+            }
+        }
+
+        $num_entries = count($training_data);
+        foreach ($idf as $token => $count) {
+            $idf[$token] = log($num_entries / $count);
+        }
+
+        return $idf;
+    }
+
+    private function calculateTFIDF($entry_tokens, $query_tokens, $idf)
+    {
+        $score = 0;
+
+        foreach ($query_tokens as $token) {
+            $tf = $this->calculateTF($token, $entry_tokens);
+            $score += $tf * ($idf[$token] ?? 0);
+        }
+
+        return $score;
+    }
+
+    private function calculateTF($token, $tokens)
+    {
+        $count = 0;
+        foreach ($tokens as $t) {
+            if ($t === $token) {
+                $count++;
+            }
+        }
+        return $count / count($tokens);
+    }
+
+    private function buildContext($relevant_entries)
+    {
+        $context = "";
+        foreach ($relevant_entries as $entry) {
+            $context .= "Question: " . $entry['question'] . "\nAnswer: " . $entry['answer'] . "\n\n";
+        }
+        return $context;
+    }
+
     private function formatResponseManually($response)
     {
         // Convert new lines to <br>
