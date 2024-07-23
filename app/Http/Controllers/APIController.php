@@ -117,7 +117,8 @@ class APIController extends Controller
             $entry_tokens = explode(' ', $entry['question']);
             $score = $this->calculateTFIDF($entry_tokens, $query_tokens, $idf);
 
-            if ($score > 0.5) { // Adjust the threshold as needed
+            // Adjust the threshold ratio
+            if ($score > 0.5) {
                 $relevant_entries[] = $entry;
             }
         }
