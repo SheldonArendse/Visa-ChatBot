@@ -179,9 +179,12 @@ class APIController extends Controller
         return $score;
     }
 
+    // Calculate the term frequency of a token
     private function calculateTF($token, $tokens)
     {
         $count = 0;
+        // Loop through each token in the array to measure how frequently a token appears
+        // if the tokens match, increment the count by 1
         foreach ($tokens as $t) {
             if ($t === $token) {
                 $count++;
