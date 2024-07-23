@@ -193,10 +193,13 @@ class APIController extends Controller
         return $count / count($tokens);
     }
 
+    // Constructs a context string from a list of relevant FAQ entries
     private function buildContext($relevant_entries)
     {
         $context = "";
+        // loop through each relevant entry in the associative array (Question and Answer)
         foreach ($relevant_entries as $entry) {
+            // Concatenate the Q and A to the context string
             $context .= "Question: " . $entry['question'] . "\nAnswer: " . $entry['answer'] . "\n\n";
         }
         return $context;
