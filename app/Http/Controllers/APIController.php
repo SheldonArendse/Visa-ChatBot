@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Session;
 
 class APIController extends Controller
 {
-
     public function showForm()
     {
         return view('openai');
@@ -52,13 +51,17 @@ class APIController extends Controller
             // Create the messages array for API request
             $systemMessage = [
                 'role' => 'system',
-                'content' => 'You are an assistant speaking with a client specialized in providing information about South African visas. Your responses should:
-                    - Be concise and not exceed 200 tokens.
-                    - Provide all the necessary information using only 200 tokens or less.'
+                'content' => 'You are an assistant specialized in providing information about South African visas. Your responses should be concise and provide all necessary information within 200 tokens or less.'
             ];
 
-            // Merge the system message and the conversation history array
-            $apiMessages = array_merge([$systemMessage], $conversation);
+            // Include the context from the FAQ document
+            $faqContextMessage = [
+                'role' => 'system',
+                'content' => "Based on the following FAQs:\n\n$context"
+            ];
+
+            // Merge the system message, FAQ context, and the conversation history array
+            $apiMessages = array_merge([$systemMessage, $faqContextMessage], $conversation);
             $apiMessages[] = ['role' => 'user', 'content' => $userMessage];
 
             // Post request to OpenAI API
@@ -70,13 +73,10 @@ class APIController extends Controller
                 ],
             ]);
 
-            // Prepare the prompt with context
-            $prompt = "You are an expert visa immigration lawyer in South Africa, assisting clients with visa and permit questions. Based on the provided context, please provide a concise and accurate response to the user's query:\n\nContext: $context\n\nUser Query: $userMessage\n\nResponse:";
-
-            $response = $client->post('completions', [
+            $response = $client->post('chat/completions', [
                 'json' => [
-                    'model' => 'gpt-3.5-turbo-instruct',
-                    'prompt' => $prompt,
+                    'model' => 'gpt-4o',
+                    'messages' => $apiMessages,
                     'max_tokens' => 150,
                     'n' => 1,
                     'stop' => null,
@@ -84,7 +84,7 @@ class APIController extends Controller
             ]);
 
             $completion = json_decode($response->getBody()->getContents(), true);
-            $message = $completion['choices'][0]['text'];
+            $message = $completion['choices'][0]['message']['content'];
 
             // Format the response manually
             $formattedMessage = $this->formatResponseManually($message);
@@ -117,8 +117,7 @@ class APIController extends Controller
             $entry_tokens = explode(' ', $entry['question']);
             $score = $this->calculateTFIDF($entry_tokens, $query_tokens, $idf);
 
-            // Adjust the threshold ratio
-            if ($score > 0.5) {
+            if ($score > 0.5) { // Adjust the threshold as needed
                 $relevant_entries[] = $entry;
             }
         }
