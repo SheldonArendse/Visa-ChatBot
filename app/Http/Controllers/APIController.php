@@ -43,6 +43,21 @@ class APIController extends Controller
 
             // Find relevant entries from FAQs
             $relevantEntries = $this->findRelevantEntries($userMessage, $faqs);
+
+            // Check if relevant entries are found
+            if (empty($relevantEntries)) {
+                $automatedResponse = "Sorry, I can't assist you with that question. \n\nYour question has been passed on to an agent.";
+                Log::info('Bot cannot answer this message: ' . $automatedResponse);
+
+                $conversation[] = ['role' => 'user', 'content' => $userMessage];
+                $conversation[] = ['role' => 'assistant', 'content' => $automatedResponse];
+
+                session(['conversation' => $conversation]);
+
+                return redirect()->back()->with('message', $automatedResponse);
+            }
+
+            // Calling method to find relevant entries for context
             $context = $this->buildContext($relevantEntries);
 
             // Get existing conversation from session or instantiate an empty array
@@ -75,7 +90,7 @@ class APIController extends Controller
 
             $response = $client->post('chat/completions', [
                 'json' => [
-                    'model' => 'gpt-4o',
+                    'model' => 'gpt-4',
                     'messages' => $apiMessages,
                     'max_tokens' => 220,
                     'n' => 1,
@@ -106,6 +121,7 @@ class APIController extends Controller
             return redirect()->back()->with('response', 'Error: ' . $e->getMessage());
         }
     }
+
 
     // Find FAQ query related to the user query
     private function findRelevantEntries($user_query, $training_data)
