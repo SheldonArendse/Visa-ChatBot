@@ -90,7 +90,7 @@ class APIController extends Controller
 
             $response = $client->post('chat/completions', [
                 'json' => [
-                    'model' => 'gpt-4',
+                    'model' => 'gpt-4o',
                     'messages' => $apiMessages,
                     'max_tokens' => 220,
                     'n' => 1,
