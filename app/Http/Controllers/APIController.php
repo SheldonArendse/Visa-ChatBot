@@ -44,24 +44,26 @@ class APIController extends Controller
             // Find relevant entries from FAQs
             $relevantEntries = $this->findRelevantEntries($userMessage, $faqs);
 
-            // Check if relevant entries are found
-            if (empty($relevantEntries)) {
-                $automatedResponse = "Sorry, I can't assist you with that question. \n\nYour question has been passed on to an agent.";
-                Log::info('Bot cannot answer this message: ' . $automatedResponse);
+            // Get existing conversation from session or instantiate an empty array
+            $conversation = session('conversation', []);
 
-                $conversation[] = ['role' => 'user', 'content' => $userMessage];
+            // Append user input to the conversation
+            $conversation[] = ['role' => 'user', 'content' => $userMessage];
+
+            // Check if relevant entries are found else return automated response
+            if (empty($relevantEntries)) {
+                $automatedResponse = "Sorry, I can't assist you with that question. Your question has been passed on to an agent.";
+
+                // Append automated response to the conversation
                 $conversation[] = ['role' => 'assistant', 'content' => $automatedResponse];
 
+                // Store the updated conversation in the session
                 session(['conversation' => $conversation]);
 
                 return redirect()->back()->with('message', $automatedResponse);
             }
 
-            // Calling method to find relevant entries for context
             $context = $this->buildContext($relevantEntries);
-
-            // Get existing conversation from session or instantiate an empty array
-            $conversation = session('conversation', []);
 
             // Create the messages array for API request
             $systemMessage = [
@@ -104,8 +106,7 @@ class APIController extends Controller
             // Format the response manually
             $formattedMessage = $this->formatResponseManually($message);
 
-            // Append user input and AI response to the conversation
-            $conversation[] = ['role' => 'user', 'content' => $userMessage];
+            // Append AI response to the conversation
             $conversation[] = ['role' => 'assistant', 'content' => $formattedMessage];
 
             // Use the formatted message as the response
@@ -121,6 +122,7 @@ class APIController extends Controller
             return redirect()->back()->with('response', 'Error: ' . $e->getMessage());
         }
     }
+
 
 
     // Find FAQ query related to the user query
