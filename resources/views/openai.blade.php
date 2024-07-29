@@ -12,7 +12,7 @@
     <div class="container chat-container">
         <!-- AI logo image -->
         <div class="chat-header">
-            <img src="{{ asset('images/monkeyAI-Title.png') }}" alt="AI Logo" id="ai-logo">
+            <img src="{{ asset('images/monkeyAI-Title.png') }}" alt="AI Logo" id="ai-logo" draggable="false">
         </div>
 
         <!-- Conversation history and text output -->
@@ -24,7 +24,7 @@
                 {!! $message['content'] !!}
                 @else
                 <div class="ai-response">
-                    <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon">
+                    <img src="{{ asset('images/banana.png') }}" alt="AI Icon" class="profile-icon" draggable="false">
                     {!! $message['content'] !!}
                 </div>
                 @endif
