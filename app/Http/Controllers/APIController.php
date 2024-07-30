@@ -68,7 +68,7 @@ class APIController extends Controller
             // Create the messages array for API request
             $systemMessage = [
                 'role' => 'system',
-                'content' => 'You are an assistant specialized in providing information about South African visas. Your responses should be concise and provide all necessary information within 200 tokens or less.'
+                'content' => 'You are an assistant specialized in providing information about South African visas. Your responses should be concise and provide all necessary information within 200 tokens or less. Only use the FAQ JSON document to answer questions'
             ];
 
             // Include the context from the FAQ document
