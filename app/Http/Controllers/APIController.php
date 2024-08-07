@@ -68,7 +68,10 @@ class APIController extends Controller
             // Create the messages array for API request
             $systemMessage = [
                 'role' => 'system',
-                'content' => 'You are an assistant specialized in providing information about South African visas. Your responses should be concise, provide all necessary information within 200 tokens or less, and only use the FAQ document to answer questions. Do not add any information or steps that are not explicitly mentioned in the FAQ document.'
+                'content' => 'You are an assistant specialized in providing information about South African visas. Your responses should be
+                 concise, provide all necessary information within 200 tokens or less, and only use the FAQ document to answer questions. 
+                 Do not add any information or steps that are not explicitly mentioned in the FAQ document. 
+                 If a user’s question is not related to South African visas, politely remind them to stay on visa-related topics.'
             ];
 
             // Include the context from the FAQ document
