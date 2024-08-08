@@ -50,19 +50,6 @@ class APIController extends Controller
             // Append user input to the conversation
             $conversation[] = ['role' => 'user', 'content' => $userMessage];
 
-            // Check if relevant entries are found else return automated response
-            // if (empty($relevantEntries)) {
-            //     $automatedResponse = "Sorry, I can't assist you with that question. Your question has been passed on to an agent.";
-
-            //     // Append automated response to the conversation
-            //     $conversation[] = ['role' => 'assistant', 'content' => $automatedResponse];
-
-            //     // Store the updated conversation in the session
-            //     session(['conversation' => $conversation]);
-
-            //     return redirect()->back()->with('message', $automatedResponse);
-            // }
-
             $context = $this->buildContext($relevantEntries);
 
             // Create the messages array for API request
