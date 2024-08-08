@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Session;
 
 class APIController extends Controller
 {
@@ -58,7 +56,7 @@ class APIController extends Controller
                 'content' => 'You are an assistant specialized in providing information about South African visas. Your responses should be
                  concise, provide all necessary information within 200 tokens or less, and only use the FAQ document to answer questions. 
                  Do not add any information or steps that are not explicitly mentioned in the FAQ document. 
-                 If a user’s question is not related to South African visas, politely remind them to stay on visa-related topics.'
+                 If a users question is not related to South African visas, politely remind them to stay on visa-related topics.'
             ];
 
             // Include the context from the FAQ document
